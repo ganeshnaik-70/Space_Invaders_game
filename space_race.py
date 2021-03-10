@@ -3,7 +3,6 @@ from pygame import mixer
 import warnings
 import math
 import random
-import time
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 # initialize pygame
