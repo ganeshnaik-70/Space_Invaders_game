@@ -49,7 +49,7 @@ bulletx = []
 bullety = []
 bullet_state = []
 bulletx_change = 0
-bullety_change = 5
+bullety_change = 10
 
 # score
 score_value = 0
@@ -60,37 +60,44 @@ texty = 10
 over_font = pygame.font.Font("freesansbold.ttf", 64)
 
 
+# this is to show the collision fire
 def fire(x, y):
     screen.blit(blastimg, (x, y))
 
 
+# To show the score the text
 def show_text(x, y):
     score = font.render("Score :" + str(score_value), True, (255, 255, 255))
     screen.blit(score, (x, y))
 
 
+# To display the spaceship
 def player(x, y):
     screen.blit(playerimg, (x, y))
 
 
-def enemy(x, y, i):
-    screen.blit(enemyimg[i], (x, y))
+# To display the enemy
+def enemy(x, y, h):
+    screen.blit(enemyimg[h], (x, y))
 
 
-def fire_bullet(x, y, i):
+# To display the bullet
+def fire_bullet(x, y, h):
     global bullet_state
-    bullet_state[i] = "fire"
-    screen.blit(bulletimg[i], (x + 16, y + 10))
+    bullet_state[h] = "fire"
+    screen.blit(bulletimg[h], (x + 16, y + 10))
 
 
-def iscollision(enemyx, enemyy, bulletx, bullety):
-    distance = math.sqrt(math.pow(enemyx - bulletx, 2) + math.pow(enemyy - bullety, 2))
+# To check if collision occurs
+def is_collision(enemy_x, enemy_y, bullet_x, bullet_y):
+    distance = math.sqrt(math.pow(enemy_x - bullet_x, 2) + math.pow(enemy_y - bullet_y, 2))
     if distance < 27:
         return True
     else:
         return False
 
 
+# To show game over text
 def game_over():
     game_over_text = over_font.render("GAME OVER", True, (255, 255, 255))
     screen.blit(game_over_text, (200, 250))
@@ -133,13 +140,13 @@ while running:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 playerx_change = 0
 
-    # check the player boundery
+    # check the player boundary
     if playerx <= 0:
         playerx = 0
     elif playerx >= 736:
         playerx = 736
 
-    # check the enemy boundery
+    # check the enemy boundary
     for i in range(no_of_enemy):
 
         # game over
@@ -161,7 +168,7 @@ while running:
         # collision detection
         for j in range(len(bulletimg)):
             try:
-                collision = iscollision(enemyx[i], enemyy[i], bulletx[j], bullety[j])
+                collision = is_collision(enemyx[i], enemyy[i], bulletx[j], bullety[j])
                 if collision:
                     fire(enemyx[i], enemyy[i])
                     collision_sound = mixer.Sound("explosion.wav")
@@ -188,11 +195,14 @@ while running:
                 bullet_state.pop(i)
         except:
             pass
+
+    # To make bullet movement
     for i in range(len(bulletimg)):
         if bullet_state[i] == "fire":
             fire_bullet(bulletx[i], bullety[i], i)
             bullety[i] -= bullety_change
 
+    # To change players x coordinate
     playerx += playerx_change
     player(playerx, playery)
     show_text(textx, texty)
